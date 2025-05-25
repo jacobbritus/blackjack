@@ -7,7 +7,7 @@ figures_list = [chr(9829), chr(9830), chr(9830), chr(9827)]
 
 HEARTS = chr(9829)  # Character 9829 is '♥'.
 DIAMONDS = chr(9830)  # Character 9830 is '♦'.
-SPADES = chr(9830)  # Character 9824 is '♠'.
+SPADES = chr(9824)  # Character 9824 is '♠'.
 CLUBS = chr(9827)  # Character 9827 is '♣'.
 
 def create_card(num, figure):
@@ -17,24 +17,24 @@ def create_card(num, figure):
     return split
 
 # prints the cards side by side
-def print_cards(cards):
-    tgt = ""
+def print_cards(deck):
+    placeholder = ""
 
-    for i in range(0, len(cards[0])):
+    for i in range(0, len(deck[0])):
         card_number = 0
-        tgt += cards[card_number][i]
+        placeholder += deck[card_number][i]
 
 
         # if more cards
         while True:
             try:
                 card_number += 1
-                tgt += cards[card_number][i]
+                placeholder += deck[card_number][i]
             except IndexError:
                 break
-        tgt += "\n"
+        placeholder += "\n"
 
-    print(tgt)
+    print(placeholder)
 
 
 
@@ -69,14 +69,12 @@ def players_turn():
 
         # hit
         if hit_or_stand == "h":
-            player_cards_numbers.append([random.choice(cards_list), random.choice(figures_list)])
-            print(f"You: {sum(cards[0] for cards in player_cards_numbers)}")
-            player_cards_display = [create_card(player_cards_numbers[i][0], player_cards_numbers[i][1]) for i in
-                                    range(0, len(player_cards_numbers))]
-            print_cards(player_cards_display)
+            player_deck.append([random.choice(cards_list), random.choice(figures_list)])
+            print_deck(computer_deck)
+            print_deck(player_deck)
 
             # player goes over 21
-            if sum(cards[0] for cards in player_cards_numbers) > 21:
+            if deck_total(player_deck) > 21:
                 print("Bust.")
                 input("Press \"Enter\" to continue.")
                 clear_terminal()
@@ -93,29 +91,24 @@ def players_turn():
 #3. computer's turn
 
 def computers_turn():
-    global computer_cards_numbers
-    computer_cards_numbers.pop()
-    computer_cards_numbers.append([random.choice(cards_list), random.choice(figures_list)])
+    global computer_deck
+    computer_deck.pop()
+    computer_deck.append([random.choice(cards_list), random.choice(figures_list)])
 
-    print(f"Dealer: {sum(cards[0] if not cards[0] == "#" else 0 for cards in computer_cards_numbers)}")
-    computer_cards_display = [create_card(computer_cards_numbers[i][0], computer_cards_numbers[i][1]) for i in
-                              range(0, len(computer_cards_numbers))]
-    print_cards(computer_cards_display)
+    print_deck(computer_deck)
+    print_deck(player_deck)
     input("Press \"Enter\" to continue.")
     clear_terminal()
 
-    while sum(cards[0] for cards in computer_cards_numbers) < 17:
-        print("Computer hits.")
-        computer_cards_numbers.append([random.choice(cards_list), random.choice(figures_list)])
-        print(f"Dealer: {sum(cards[0] if not cards[0] == "#" else 0 for cards in computer_cards_numbers)}")
-        computer_cards_display = [create_card(computer_cards_numbers[i][0], computer_cards_numbers[i][1]) for i in
-                                  range(0, len(computer_cards_numbers))]
-        print_cards(computer_cards_display)
+    while deck_total(computer_deck) < 17:
+        computer_deck.append([random.choice(cards_list), random.choice(figures_list)])
+        print_deck(computer_deck)
+        print_deck(player_deck)
         input("Press \"Enter\" to continue.")
         clear_terminal()
 
         #computer goes over 21
-        if sum(cards[0] for cards in computer_cards_numbers) > 21:
+        if deck_total(computer_deck) > 21:
             print("Bust.")
             print("Player wins.")
             input("Press \"Enter\" to continue.")
@@ -130,55 +123,78 @@ def computers_turn():
 
 def comparing_totals():
     # player wins
-    if sum(cards[0] for cards in player_cards_numbers) > sum(cards[0] for cards in computer_cards_numbers):
+    if deck_total(player_deck) > deck_total(computer_deck):
         print("Player wins.")
     # computer wins
-    elif sum(cards[0] for cards in computer_cards_numbers) > sum(cards[0] for cards in player_cards_numbers):
+    elif deck_total(computer_deck) > deck_total(player_deck):
         print("Computer wins.")
     # draw
     else:
         print("Draw.")
 
 
-player_cards_numbers = []
-computer_cards_numbers = []
+player_deck = []
+computer_deck = []
 
 def print_deck(deck):
-    ...
+    print(deck_total(deck))
+    display = [create_card(deck[i][0], deck[i][1]) for i in range(0, len(deck))]
+    print_cards(display)
 
 def game():
-    global player_cards_numbers, computer_cards_numbers
+    global player_deck, computer_deck
     while True:
-        player_cards_numbers, computer_cards_numbers = deal_cards()
+        player_deck, computer_deck = deal_cards()
 
-        print(f"Dealer: {sum(cards[0] if not cards[0] == "#" else 0 for cards in computer_cards_numbers)}")
-        computer_cards_display = [create_card(computer_cards_numbers[i][0], computer_cards_numbers[i][1]) for i in
-                                  range(0, len(computer_cards_numbers))]
-        print_cards(computer_cards_display)
 
-        print(f"You: {sum(cards[0] for cards in player_cards_numbers)}")
-        player_cards_display = [create_card(player_cards_numbers[i][0], player_cards_numbers[i][1]) for i in
-                                range(0, len(player_cards_numbers))]
-        print_cards(player_cards_display)
+        print_deck(computer_deck)
+        print_deck(player_deck)
 
 
 
 
 
         players_turn()
-        if not 21 < sum(cards[0] for cards in player_cards_numbers):
+        if not 21 < deck_total(player_deck):
             computers_turn()
-            if not 21 < sum(cards[0] if not cards[0] == "#" else 0 for cards in computer_cards_numbers):
+            if not 21 < deck_total(computer_deck):
                 comparing_totals()
 
 
-        play_again = input("press \"y\" to play again or \"x\" to quit.")
-        clear_terminal()
+        game_over()
 
-        if play_again == "y":
-            continue
-        else:
-            break
+def deck_total(deck):
+    total = sum(cards[0] if not cards[0] == "#" else 0 for cards in deck)
+    return total
+
+def over_21(deck):
+    total = deck_total(deck)
+
+    if total > 21 and any(card[0] for card in deck) == 11:
+        for card in deck:
+            if card[0] == 11:
+                card[0] = 1
+
+
+    if total > 21:
+        game_over()
+
+    return
+
+
+def game_over():
+    play_again = input("press \"y\" to play again or \"x\" to quit.")
+    clear_terminal()
+
+    if play_again == "y":
+        return
+    else:
+        exit()
+
+
+#calculate score and calculate total
+
+
 
 
 # notes
@@ -208,9 +224,10 @@ def game():
 # i changed the cards system
 # all cards get a figure
 # each card is stored in a list
-# each card is turned into a ascii version of it and then printed
+# each card is turned into an ascii version of it and then printed
 
 # 24 / 05 / 2025
-# the code's kind of a mess, so i'll fix it now.
+# the code's kind of messy, so i'll fix it now.
+# primarily, with a function that prints out the decks
 
 game()

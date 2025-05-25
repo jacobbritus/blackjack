@@ -29,11 +29,11 @@ def players_turn():
 
         # hit
         if hit_or_stand == "h":
-            player_cards.append(random.choice(cards_list))
-            print(f"Your cards: {player_cards}")
+            player_deck.append(random.choice(cards_list))
+            print(f"Your cards: {player_deck}")
 
             # player goes over 21
-            if sum(player_cards) > 21:
+            if sum(player_deck) > 21:
                 print("Bust.")
                 input("Press \"Enter\" to continue.")
                 clear_terminal()
@@ -50,19 +50,19 @@ def players_turn():
 #3. computer's turn
 
 def computers_turn():
-    print(f"Computer's cards: {computer_cards}")
+    print(f"Computer's cards: {computer_deck}")
     input("Press \"Enter\" to continue.")
     clear_terminal()
 
-    while sum(computer_cards) < 17:
+    while sum(computer_deck) < 17:
         print("Computer hits.")
-        computer_cards.append(random.choice(cards_list))
-        print(f"Computer's cards: {computer_cards}")
+        computer_deck.append(random.choice(cards_list))
+        print(f"Computer's cards: {computer_deck}")
         input("Press \"Enter\" to continue.")
         clear_terminal()
 
         #computer goes over 21
-        if sum(computer_cards) > 21:
+        if sum(computer_deck) > 21:
             print("Bust.")
             print("Player wins.")
             input("Press \"Enter\" to continue.")
@@ -77,21 +77,21 @@ def computers_turn():
 
 def comparing_totals():
     # player wins
-    if sum(player_cards) > sum(computer_cards):
+    if sum(player_deck) > sum(computer_deck):
         print("Player wins.")
     # computer wins
-    elif sum(computer_cards) > sum(player_cards):
+    elif sum(computer_deck) > sum(player_deck):
         print("Computer wins.")
     # draw
     else:
         print("Draw.")
 
 
-player_cards = []
-computer_cards = []
+player_deck = []
+computer_deck = []
 
 def game():
-    global player_cards, computer_cards
+    global player_deck, computer_deck
     while True:
         player_cards, computer_cards = deal_cards()
 

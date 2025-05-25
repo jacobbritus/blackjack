@@ -22,8 +22,6 @@ def card(num, figure):
 
     return split
 
-players_cards = card(10, SPADES), card(5, CLUBS), card(2, HEARTS), card(7, DIAMONDS)
-computer_cards = card(random.choice(cards_list), random.choice(figures_list)), card("#", "#")
 
 # prints the cards side by side
 def display_cards(cards):
@@ -47,13 +45,23 @@ def display_cards(cards):
 
 
 
+player_deck = [[random.choice(cards_list), random.choice(figures_list)] for cards in range(0, 2)]
+computer_deck = [[random.choice(cards_list), random.choice(figures_list)], ["#", "#"]]
 
-print(players_cards)
+
+# display_cards(computer_cards)
+
+while True:
+    computer_deck = [card(computer_deck[i][0], computer_deck[i][1]) for i in range(0, len(computer_deck))]
+    player_cards_display = [card(player_deck[i][0], player_deck[i][1]) for i in range(0, len(player_deck))]
+
+    display_cards(computer_deck)
+    computer_deck.append([random.choice(cards_list), random.choice(figures_list)])
 
 
-display_cards(computer_cards)
-display_cards(players_cards)
-input()
+    display_cards(player_cards_display)
+    player_deck.append([random.choice(cards_list), random.choice(figures_list)])
+    input()
 
 
 # print(tgt)
